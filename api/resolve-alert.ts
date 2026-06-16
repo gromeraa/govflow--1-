@@ -1,7 +1,6 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
 import { criticalAlerts, contracts } from "./shared-data";
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req: any, res: any) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");

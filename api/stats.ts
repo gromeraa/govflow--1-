@@ -1,8 +1,6 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
 import { documents, contracts } from "./shared-data";
-import type { GovFlowStats } from "../src/types";
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req: any, res: any) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -28,7 +26,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
 
     const compliance = totalDocs > 0 ? Math.round((validated / totalDocs) * 100) : 100;
 
-    const stats: GovFlowStats = {
+    const stats: any = {
       totalDocuments: totalDocs,
       validatedCount: validated,
       failedCount: failed,

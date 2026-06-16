@@ -2,10 +2,8 @@
  * Shared data store for all API functions
  */
 
-import { Document, ActiveTask, CriticalAlert, Contract, GovFlowStats } from "../src/types";
-
 // Global in-memory DB
-export let documents: Document[] = [
+export let documents: any[] = [
   {
     id: "doc-101",
     supplierName: "MedTech Suprimentos Hospitalares S.A.",
@@ -116,7 +114,7 @@ export let documents: Document[] = [
   }
 ];
 
-export let activeTasks: ActiveTask[] = [
+export let activeTasks: any[] = [
   {
     id: "task-001",
     documentName: "NF-2023-991.pdf",
@@ -135,7 +133,7 @@ export let activeTasks: ActiveTask[] = [
   }
 ];
 
-export let criticalAlerts: CriticalAlert[] = [
+export let criticalAlerts: any[] = [
   {
     id: "alert-1",
     type: "expired_certificate",
@@ -163,7 +161,7 @@ export let criticalAlerts: CriticalAlert[] = [
   }
 ];
 
-export let contracts: Contract[] = [
+export let contracts: any[] = [
   {
     id: "CT-2023-045",
     supplierName: "MedTech Suprimentos Hospitalares S.A.",
@@ -206,7 +204,7 @@ export let contracts: Contract[] = [
   }
 ];
 
-export let settings = {
+export let settings: any = {
   strictnessThreshold: 80,
   autoProcessEnabled: true,
   alertOnLowConfidence: true,

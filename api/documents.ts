@@ -1,8 +1,6 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
-import { documents, activeTasks, criticalAlerts, contracts, settings } from "./shared-data";
-import type { GovFlowStats } from "../src/types";
+import { documents } from "./shared-data";
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req: any, res: any) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -12,7 +10,6 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  // GET /api/documents
   if (req.method === "GET") {
     return res.status(200).json(documents);
   }
