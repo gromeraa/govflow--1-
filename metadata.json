@@ -1,0 +1,6 @@
+{
+  "name": "GovFlow",
+  "description": "Institutional document validation and automated compliance assistant for contract oversight and auditing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

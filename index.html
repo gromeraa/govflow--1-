@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GovFlow - Validação Documental Inteligente</title>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- CSS entry point -->
+    <link rel="stylesheet" href="/src/index.css" />
+  </head>
+  <body class="bg-slate-50 text-slate-800 antialiased overflow-hidden">
+    
+    <div class="flex h-screen overflow-hidden">
+      
+      <!-- SIDEBAR -->
+      <aside class="w-[260px] bg-white text-slate-650 min-h-screen flex flex-col justify-between border-r border-slate-200 shrink-0">
+        <div>
+          <!-- Brand / Logo -->
+          <div class="p-6 border-b border-slate-100 flex items-center space-x-3">
+            <div class="p-2.5 bg-indigo-600 rounded-xl text-white shadow-lg shadow-indigo-100">
+              <i data-lucide="building-2" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h1 class="font-bold text-slate-800 text-lg tracking-tight">GovFlow</h1>
+              <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Public Accountability</p>
+            </div>
+          </div>
+
+          <!-- Navigation Links -->
+          <nav class="p-4 space-y-1.5" id="sidebar-nav">
+            <button
+              id="nav-link-dashboard"
+              data-tab="dashboard"
+              class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 relative bg-indigo-50 text-indigo-600 font-bold"
+            >
+              <span class="absolute left-0 top-1/4 bottom-1/4 w-[3.5px] bg-indigo-600 rounded-r"></span>
+              <i data-lucide="layout-dashboard" class="w-[18px] h-[18px] text-indigo-600"></i>
+              <span>Painel Geral</span>
+            </button>
+
+            <button
+              id="nav-link-validation"
+              data-tab="validation"
+              class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 relative text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+            >
+              <span class="absolute left-0 top-1/4 bottom-1/4 w-[3.5px] bg-indigo-600 rounded-r hidden"></span>
+              <i data-lucide="file-check" class="w-[18px] h-[18px] text-slate-400"></i>
+              <span>Validação Doc</span>
+            </button>
+
+            <button
+              id="nav-link-contracts"
+              data-tab="contracts"
+              class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 relative text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+            >
+              <span class="absolute left-0 top-1/4 bottom-1/4 w-[3.5px] bg-indigo-600 rounded-r hidden"></span>
+              <i data-lucide="folder-git" class="w-[18px] h-[18px] text-slate-400"></i>
+              <span>Contratos Plano</span>
+            </button>
+
+            <button
+              id="nav-link-reports"
+              data-tab="reports"
+              class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 relative text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+            >
+              <span class="absolute left-0 top-1/4 bottom-1/4 w-[3.5px] bg-indigo-600 rounded-r hidden"></span>
+              <i data-lucide="printer" class="w-[18px] h-[18px] text-slate-400"></i>
+              <span>Relatórios / CND</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- Footer Actions (Settings & Demo Reset) -->
+        <div class="p-4 border-t border-slate-100 space-y-2">
+          <button
+            id="nav-link-settings"
+            data-tab="settings"
+            class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 relative text-slate-500 hover:bg-slate-50 hover:text-slate-800"
+          >
+            <span class="absolute left-0 top-1/4 bottom-1/4 w-[3.5px] bg-indigo-600 rounded-r hidden"></span>
+            <i data-lucide="settings" class="w-[18px] h-[18px] text-slate-400"></i>
+            <span>Configurações</span>
+          </button>
+
+          <button
+            id="btn-reset-demo"
+            class="w-full flex items-center justify-between px-4 py-2 border border-slate-200 rounded-lg text-xs text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all cursor-pointer"
+            title="Restabelecer base de dados de demonstração padrão"
+          >
+            <span class="flex items-center space-x-2">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span id="reset-btn-text">Resetar Demo</span>
+            </span>
+            <span class="text-[9px] font-mono border border-slate-200 bg-slate-50 px-1 rounded text-slate-500">MEM</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN WRAPPER -->
+      <div class="flex-1 flex flex-col min-h-screen overflow-hidden">
+        
+        <!-- HEADER -->
+        <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 shrink-0">
+          <!-- Search Block -->
+          <div class="flex items-center w-96 relative">
+            <i data-lucide="search" class="absolute left-4.5 text-slate-400 w-4 h-4" id="header-search-icon"></i>
+            <input
+              id="header-search-input"
+              type="search"
+              placeholder="Pesquisar credor, CNPJ, nota fiscal..."
+              class="w-full pl-11 pr-14 py-2 bg-slate-100 border-none rounded-full text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+            />
+            <button 
+              id="header-search-clear-btn"
+              class="absolute right-4 text-xs text-slate-400 hover:text-slate-600 font-medium hidden"
+            >
+              Limpar
+            </button>
+          </div>
+
+          <!-- Utility Controls -->
+          <div class="flex items-center space-x-5">
+            <!-- Help Trigger -->
+            <div class="relative">
+              <button 
+                id="btn-help-dropdown"
+                class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-all cursor-pointer"
+                title="Exibir Documentações da Auditoria"
+              >
+                <i data-lucide="info" class="w-5 h-5"></i>
+              </button>
+
+              <!-- Help Menu -->
+              <div id="help-dropdown-menu" class="absolute right-0 mt-3 w-80 bg-white border border-slate-200 rounded-lg shadow-xl p-5 text-slate-700 hidden z-50">
+                <div class="flex items-center space-x-2 pb-2 mb-3 border-b border-slate-100">
+                  <i data-lucide="info" class="w-4 h-4 text-indigo-600"></i>
+                  <h3 class="font-semibold text-slate-900 text-sm">Auditoria Documental</h3>
+                </div>
+                <p class="text-xs leading-relaxed text-slate-600 mb-2">
+                  Esta plataforma automatiza a conformidade de credores públicos de acordo com as leis orçamentárias nacionais.
+                </p>
+                <div class="space-y-1.5 pt-1 text-[11px] text-slate-500">
+                  <div class="flex items-start space-x-1.5">
+                    <span class="text-indigo-600 font-bold">●</span>
+                    <span><strong>Extrator IA:</strong> Extração cognitiva via Gemini OCR.</span>
+                  </div>
+                  <div class="flex items-start space-x-1.5">
+                    <span class="text-indigo-600 font-bold">●</span>
+                    <span><strong>CNDs:</strong> CRF/FGTS, Trabalhista e Fazendária.</span>
+                  </div>
+                  <div class="flex items-start space-x-1.5">
+                    <span class="text-indigo-600 font-bold">●</span>
+                    <span>Modelagem compatível com padrões Federais, Estaduais e Municipais.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notifications Trigger -->
+            <div class="relative">
+              <button 
+                id="btn-notifications-dropdown"
+                class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50/50 rounded-full transition-all cursor-pointer relative"
+                title="Alertas Críticos Ativos"
+              >
+                <i data-lucide="bell" class="w-5 h-5"></i>
+                <span id="notifications-badge" class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full hidden"></span>
+              </button>
+
+              <!-- Notifications Drawer/Dropdown -->
+              <div id="notifications-dropdown-menu" class="absolute right-0 mt-3 w-96 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden hidden z-50">
+                <div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                  <span class="font-bold text-slate-800 text-xs tracking-wide uppercase">Alertas Ativos</span>
+                  <span id="notifications-count-label" class="text-[10px] bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-bold">0 Alertas</span>
+                </div>
+                <div id="notifications-list" class="divide-y divide-slate-50 max-h-80 overflow-y-auto">
+                  <!-- Injected via JavaScript -->
+                  <div class="p-5 text-center text-slate-400 text-xs">Sem alertas críticos no momento.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- User Info Badge -->
+            <div class="flex items-center space-x-3 pl-2 border-l border-slate-200">
+              <div class="flex flex-col text-right">
+                <span class="text-xs font-semibold text-slate-800">Auditor Público</span>
+                <span class="text-[10px] text-slate-400 font-mono truncate max-w-40" id="user-display-email">g.romera2017@gmail.com</span>
+              </div>
+              <div id="user-avatar" class="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 text-sm font-bold uppercase overflow-hidden hover:border-indigo-500 transition-all cursor-pointer">
+                GR
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- PAGE CONTENT CONTAINER -->
+        <main class="flex-1 overflow-y-auto p-8" id="page-content">
+
+          <!-- 1. DASHBOARD PAGE -->
+          <section id="page-dashboard" class="space-y-8">
+            <div class="flex items-center justify-between">
+              <div>
+                <h2 class="text-xl font-bold text-slate-800 tracking-tight">Painel de Controle de Conformidade</h2>
+                <p class="text-xs text-slate-500">Métricas consolidadas de liquidação de despesas e auditorias do dia.</p>
+              </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <!-- Metric 1: Taxa de Conformidade -->
+              <div class="bg-white border-t-2 border-emerald-500 rounded-lg p-5 shadow-xs flex justify-between items-start">
+                <div class="space-y-1">
+                  <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider block">Taxa de Conformidade</span>
+                  <span class="text-3xl font-bold tracking-tight text-slate-900" id="stat-compliance-rate">0%</span>
+                  <div class="w-24 bg-slate-150 h-1.5 rounded-full mt-2.5 overflow-hidden">
+                    <div id="stat-compliance-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                  </div>
+                </div>
+                <div class="p-3 bg-emerald-50 rounded-full text-emerald-600 shrink-0">
+                  <i data-lucide="shield-check" class="w-5 h-5"></i>
+                </div>
+              </div>
+
+              <!-- Metric 2: Documentos Processados -->
+              <div class="bg-white border-t-2 border-indigo-500 rounded-lg p-5 shadow-xs flex justify-between items-start">
+                <div class="space-y-1">
+                  <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider block">Documentos Processados</span>
+                  <span class="text-3xl font-bold tracking-tight text-slate-900" id="stat-total-documents">0</span>
+                  <p class="text-[10px] text-slate-400 font-semibold mt-1">Auditados via IA cognitiva</p>
+                </div>
+                <div class="p-3 bg-indigo-50 rounded-full text-indigo-600 shrink-0">
+                  <i data-lucide="file-check" class="w-5 h-5"></i>
+                </div>
+              </div>
+
+              <!-- Metric 3: Faturamento Validado -->
+              <div class="bg-white border-t-2 border-indigo-400 rounded-lg p-5 shadow-xs flex justify-between items-start">
+                <div class="space-y-1">
+                  <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider block">Faturamento Validado</span>
+                  <span class="text-3xl font-bold tracking-tight text-slate-900 truncate max-w-[180px] block" id="stat-validated-value">R$ 0,00</span>
+                  <p class="text-[10px] text-slate-400 font-semibold mt-1">Somas com CNDs válidas</p>
+                </div>
+                <div class="p-3 bg-indigo-50 rounded-full text-indigo-505 shrink-0">
+                  <i data-lucide="database" class="w-5 h-5"></i>
+                </div>
+              </div>
+
+              <!-- Metric 4: Alertas Ativos -->
+              <div class="bg-white border-t-2 border-rose-500 rounded-lg p-5 shadow-xs flex justify-between items-start">
+                <div class="space-y-1">
+                  <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider block">Alertas Críticos</span>
+                  <span class="text-3xl font-bold tracking-tight text-slate-900" id="stat-critical-alerts">0</span>
+                  <p class="text-[10px] text-rose-500 font-semibold mt-1 flex items-center space-x-1">
+                    <i data-lucide="alert-triangle" class="w-3 h-3"></i>
+                    <span>Exigem ação do auditor</span>
+                  </p>
+                </div>
+                <div class="p-3 bg-rose-50 rounded-full text-rose-600 shrink-0">
+                  <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bento Dashboard Sections -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <!-- Left Bento: Supplier average confidence scores -->
+              <div class="bg-white border border-slate-200 rounded-xl p-6 lg:col-span-5 h-fit shadow-xs">
+                <div class="pb-3 border-b border-slate-50 mb-4">
+                  <h3 class="font-bold text-slate-850 text-sm">Nível Médio de Confiança de Fornecedores</h3>
+                  <p class="text-[10px] text-slate-400 mt-0.5">Média da pontuação OCR/XML de notas fiscais emitidas.</p>
+                </div>
+                <!-- Dynamic Bar Graph simulated in pure css -->
+                <div id="supplier-confidence-bars" class="space-y-4 pt-2">
+                  <!-- Injected dynamically via JS -->
+                </div>
+              </div>
+
+              <!-- Right Bento: Contract budgets and allocated spends -->
+              <div class="bg-white border border-slate-200 rounded-xl p-6 lg:col-span-7 shadow-xs">
+                <div class="pb-3 border-b border-slate-50 mb-4 flex items-center justify-between">
+                  <div>
+                    <h3 class="font-bold text-slate-850 text-sm">Controle de Empenho por Contrato</h3>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Comparação entre limites contratuais e repasses aprovados.</p>
+                  </div>
+                  <button 
+                    id="dashboard-to-validation-shortcut"
+                    class="text-[10px] text-indigo-600 font-bold hover:underline cursor-pointer flex items-center"
+                  >
+                    <span>Processar</span>
+                    <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                  </button>
+                </div>
+
+                <div id="dashboard-contracts-list" class="space-y-4">
+                  <!-- Injected via JavaScript -->
+                </div>
+
+                <div class="bg-slate-50 rounded-lg p-3 border border-slate-100 flex items-center space-x-2 text-[11px] text-slate-500 mt-5">
+                  <i data-lucide="info" class="text-indigo-600 shrink-0 w-3.5 h-3.5"></i>
+                  <span>As contas anuais são validadas de acordo com o Tribunal de Contas (TCU).</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. VALIDATION PAGE -->
+          <section id="page-validation" class="space-y-8 hidden">
+            <div>
+              <h2 class="text-xl font-bold text-slate-800 tracking-tight">Central de Validação de Documentos</h2>
+              <p class="text-xs text-slate-500">Faça o upload de Notas Fiscais ou Certidões para que nossa IA faça a auditoria.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <!-- Left section: Drag & Drop + Task simulator -->
+              <div class="lg:col-span-1 space-y-6">
+                <!-- Dropzone Card -->
+                <div class="bg-white border border-slate-200 rounded-lg p-6 space-y-4 shadow-xs">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-slate-800 text-sm">Central de Processamento</h3>
+                    <span class="text-[10px] text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full font-bold flex items-center space-x-1">
+                      <i data-lucide="sparkles" class="w-2.5 h-2.5"></i>
+                      <span>Cognição Automática</span>
+                    </span>
+                  </div>
+
+                  <!-- Drop Zone input area -->
+                  <div 
+                    id="upload-dropzone"
+                    class="border-2 border-dashed border-slate-200 hover:border-indigo-500 hover:bg-slate-50/30 rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200"
+                  >
+                    <input 
+                      type="file" 
+                      id="real-file-input" 
+                      class="hidden" 
+                      accept=".pdf,.xml,.png,.jpg,.jpeg"
+                    />
+                    <div class="p-4 bg-indigo-50 text-indigo-600 rounded-xl mb-4" id="upload-icon-container">
+                      <i data-lucide="upload" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-xs font-bold text-slate-800">Arraste seus documentos aqui</span>
+                    <span class="text-[10px] text-slate-400 mt-1 uppercase tracking-wide">PDF, XML, PNG até 50MB</span>
+                  </div>
+
+                  <!-- Simulations templates rapid load -->
+                  <div class="pt-2">
+                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mb-2">Simular Carregamentos Rápidos</span>
+                    <div class="grid grid-cols-2 gap-2" id="simulations-buttons-grid">
+                      <!-- Simulated buttons injected via JS -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Processing task watcher box -->
+                <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-xs space-y-4">
+                  <div class="flex items-center justify-between pb-2 border-b border-slate-50">
+                    <h3 class="font-bold text-slate-855 text-sm flex items-center space-x-2">
+                      <i data-lucide="refresh-cw" class="text-indigo-600 animate-spin w-3.5 h-3.5"></i>
+                      <span>Em Processamento</span>
+                    </h3>
+                    <span id="active-tasks-count" class="text-[10px] text-slate-400 font-mono font-bold">0 TAREFAS</span>
+                  </div>
+                  <div id="processing-tasks-list" class="space-y-4 max-h-80 overflow-y-auto pr-1">
+                    <!-- Injected dynamically via JS -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right section: Documents table log -->
+              <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
+                  
+                  <!-- Filter toolbar -->
+                  <div class="p-5 bg-slate-50/50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center space-x-2">
+                      <select 
+                        id="filter-status"
+                        class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-650 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <option value="TODOS">Todos Status</option>
+                        <option value="APROVADO">Aprovados</option>
+                        <option value="INCONSISTENCIA">Inconsistência</option>
+                        <option value="REVISAO">Aguardando Revisão</option>
+                      </select>
+
+                      <select 
+                        id="filter-supplier"
+                        class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-650 focus:outline-none focus:ring-2 focus:ring-indigo-500 max-w-44"
+                      >
+                        <option value="TODOS">Todos Credores</option>
+                        <!-- Injected via JS -->
+                      </select>
+                    </div>
+
+                    <!-- Filter search table input -->
+                    <div class="relative w-full sm:w-64">
+                      <i data-lucide="search" class="absolute left-3 top-2.5 text-slate-400 w-3.5 h-3.5" id="inline-search-icon"></i>
+                      <input
+                        id="filter-table-search"
+                        type="text"
+                        placeholder="Buscar credor ou contrato..."
+                        class="w-full pl-9 pr-4 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700 placeholder-slate-450 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Table core content -->
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                      <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-[10px] text-slate-400 uppercase font-bold tracking-wider">
+                          <th class="py-3 px-4">ID / Tipo</th>
+                          <th class="py-3 px-4">Razão Social Credor</th>
+                          <th class="py-3 px-4">Valor BRL</th>
+                          <th class="py-3 px-4">Confiança</th>
+                          <th class="py-3 px-4 text-center">Status</th>
+                          <th class="py-3 px-4 text-right">Ação</th>
+                        </tr>
+                      </thead>
+                      <tbody id="documents-table-body" class="divide-y divide-slate-100 text-xs">
+                        <!-- Injected via JS -->
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 3. CONTRACTS PAGE -->
+          <section id="page-contracts" class="space-y-8 hidden">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h2 class="text-xl font-bold text-slate-800 tracking-tight">Gestão de Contratos Administrativos</h2>
+                <p class="text-xs text-slate-500">Visualização de limites de teto financeiro para liquidações públicas.</p>
+              </div>
+
+              <button
+                id="btn-open-add-contract-modal"
+                class="flex items-center space-x-2 px-4 py-2.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md shadow-indigo-100 transition-all cursor-pointer self-start md:self-auto"
+              >
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                <span>Cadastrar Contrato</span>
+              </button>
+            </div>
+
+            <!-- Contracts list grid layout -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="contracts-grid-container">
+              <!-- Injected dynamically via JS -->
+            </div>
+          </section>
+
+          <!-- 4. REPORTS PAGE -->
+          <section id="page-reports" class="space-y-8 hidden">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h2 class="text-xl font-bold text-slate-800 tracking-tight">Emissão de Certidões de Gestão</h2>
+                <p class="text-xs text-slate-500">Gere atestados consolidados oficiais de integridade fiscal de credores governamentais.</p>
+              </div>
+
+              <button
+                id="btn-toggle-report"
+                class="flex items-center space-x-2 px-4 py-2.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md shadow-indigo-100 transition-all cursor-pointer self-start md:self-auto"
+              >
+                <i data-lucide="printer" class="w-4 h-4"></i>
+                <span id="btn-toggle-report-text">Emitir Certidão Consolidada</span>
+              </button>
+            </div>
+
+            <!-- CONDITIONAL SYSTEM REGISTER HISTORY STATE & OFFICIAL CERTIFICATE VIEW -->
+            <div id="report-view-container">
+              
+              <!-- Core Chronological Registry (Normally visible first) -->
+              <div id="registry-normal-view" class="space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  
+                  <!-- Left side: Stat cards -->
+                  <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-xs space-y-4">
+                      <h3 class="font-bold text-slate-850 text-sm flex items-center space-x-2">
+                        <i data-lucide="database" class="w-4 h-4 text-indigo-600"></i>
+                        <span>Base Estatutária</span>
+                      </h3>
+                      
+                      <div class="space-y-4 text-xs">
+                        <div class="flex justify-between border-b border-slate-50 pb-2">
+                          <span class="text-slate-400">Total Validado</span>
+                          <span class="font-bold text-slate-800" id="report-validated-count">0 itens</span>
+                        </div>
+                        <div class="flex justify-between border-b border-slate-50 pb-2">
+                          <span class="text-slate-400">Restrições Ativas</span>
+                          <span class="font-bold text-rose-600 font-mono" id="report-failed-count">0 pendências</span>
+                        </div>
+                        <div class="flex justify-between pb-1">
+                          <span class="text-slate-400">Dispositivo Legal</span>
+                          <span class="font-bold text-slate-800">LRF Art. 195</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-5 text-xs text-slate-650 space-y-3 leading-relaxed">
+                      <div class="flex items-center space-x-2 text-slate-800 font-semibold mb-1">
+                        <i data-lucide="file-check-2" class="w-4 h-4 text-indigo-600"></i>
+                        <span>Diretrizes de Fiscalização</span>
+                      </div>
+                      <p>
+                        A emissão de relatórios do GovFlow consolida atos administrativos processados no período. As informações coletadas contam com presunção relativa de autenticidade garantida por assinatura ICP-Brasil.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Right side: Log log table searchable list -->
+                  <div class="lg:col-span-2">
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+                      <div class="p-5 border-b border-slate-100 bg-slate-55 flex items-center justify-between">
+                        <h3 class="font-bold text-slate-850 text-sm">Registro Cronológico de Execuções</h3>
+                        
+                        <div class="relative">
+                          <i data-lucide="search" class="absolute left-3 top-2.5 text-slate-400 w-3.5 h-3.5"></i>
+                          <input
+                            id="audit-log-search-input"
+                            type="text"
+                            placeholder="Pesquisar registros..."
+                            class="pl-9 pr-4 py-1.5 bg-slate-50 border-none rounded-lg text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="overflow-x-auto max-h-[420px]">
+                        <table class="w-full text-left border-collapse">
+                          <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-[10px] text-slate-450 uppercase font-bold tracking-wider">
+                              <th class="py-3 px-4">Momento</th>
+                              <th class="py-3 px-4">Operação</th>
+                              <th class="py-3 px-4">Origem / Responsável</th>
+                              <th class="py-3 px-4">Rastreador de Detalhes</th>
+                            </tr>
+                          </thead>
+                          <tbody id="audit-log-table-body" class="divide-y divide-slate-150 text-xs text-slate-600">
+                            <!-- Injected dynamically via JS -->
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Official governmental Certificate Sheet View (Hidden by default, shown when Print button is toggled) -->
+              <div id="registry-report-sheet" class="bg-white border text-slate-800 border-slate-200 rounded-xl p-8 space-y-6 max-w-3xl mx-auto shadow-2xl shadow-slate-100/50 hidden">
+                <!-- Certificado letterhead logo -->
+                <div class="text-center space-y-2 pb-6 border-b border-double border-slate-200">
+                  <h2 class="font-bold text-slate-800 text-lg uppercase tracking-tight">RELATÓRIO DE CONFORMIDADE DE GESTÃO FISCAL</h2>
+                  <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">SECRETARIA DE FINANÇAS E CONTROLE GERAL • GOVFLOW INTELLIGENCE</p>
+                  <p class="text-xs text-slate-500 font-mono">Chave de Assinatura Eletrônica: <span id="report-signature-hash">SHA256-GF-883902</span></p>
+                </div>
+
+                <!-- Structured metadata block -->
+                <div class="grid grid-cols-2 gap-4 text-xs py-2 bg-slate-50/50 p-4 rounded-lg border border-slate-100">
+                  <div class="space-y-1">
+                    <span class="text-slate-400 block font-medium">Órgão Regulador</span>
+                    <span class="font-bold text-slate-700">Tribunal de Contas do Município</span>
+                  </div>
+                  <div class="space-y-1">
+                    <span class="text-slate-400 block font-medium">Data de Emissão</span>
+                    <span class="font-bold text-slate-700" id="report-generation-date">16/06/2026 - 05:38:52</span>
+                  </div>
+                  <div class="space-y-1">
+                    <span class="text-slate-400 block font-medium">Operação</span>
+                    <span class="font-bold text-slate-700">Verificação de regularidade previdenciária e orçamentária</span>
+                  </div>
+                  <div class="space-y-1">
+                    <span class="text-slate-400 block font-medium">Auditores de Sessão</span>
+                    <span class="font-bold text-slate-700">Sistema Autônomo & Auditor Público</span>
+                  </div>
+                </div>
+
+                <div class="space-y-3">
+                  <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-1">Extrato de Validade dos Credores</h3>
+                  <div class="divide-y divide-slate-100 text-xs font-medium" id="report-supplier-status-rows">
+                    <!-- Injected dynamically via JS -->
+                  </div>
+                </div>
+
+                <!-- Legal notice statement footer -->
+                <div class="border-t border-slate-200 pt-6 space-y-4 text-xs font-medium text-slate-600 leading-relaxed">
+                  <p>
+                    DECLARA-SE, para os devidos fins de conformidade perante a Lei de Responsabilidade Fiscal (LRF), que foram aplicadas rotinas algorítmicas de OCR e verificação de chaves nos portais mantidos pela Caixa Econômica, Receita Federal e Secretarias de Fazenda, reputando-se os valores autorizados em conformação técnica.
+                  </p>
+                  <p>
+                    O presente extrato resume as certidões recolhidas do banco de dados em conformidade regulatória. Fornecedores que apresentarem certidões vencidas sofrem barreira sistêmica de faturamento para fins de liquidação de despesas.
+                  </p>
+
+                  <div class="flex items-center justify-between pt-6">
+                    <div>
+                      <p class="font-mono text-[9px] text-slate-400">IP DE SESSÃO: 127.0.0.1 (Sandbox)</p>
+                    </div>
+                    <div class="text-right space-y-1">
+                      <div class="border-t border-slate-300 w-48 block my-1"></div>
+                      <p class="font-bold text-slate-700">COORDENADOR DE GESTÃO FISCAL</p>
+                      <p class="text-[10px] text-slate-400 font-mono">Assinado Digitalmente ICP-Brasil</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- 5. SETTINGS PAGE -->
+          <section id="page-settings" class="space-y-8 hidden">
+            <div>
+              <h2 class="text-xl font-bold text-slate-800 tracking-tight font-sans">Configurações Gerais do Sistema</h2>
+              <p class="text-xs text-slate-500 font-sans">Ajuste os parâmetros dos algoritmos de inteligência artificial e regras de compliance.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              <!-- Left form options -->
+              <form id="settings-form" class="lg:col-span-2 space-y-6">
+                <div class="bg-white border border-slate-200 rounded-lg p-6 space-y-6 shadow-xs text-xs">
+                  
+                  <div class="flex items-center space-x-2 pb-3 border-b border-slate-50">
+                    <i data-lucide="brain" class="text-indigo-600 w-5 h-5"></i>
+                    <h3 class="font-bold text-slate-800 text-sm">Parâmetros Cognitivos do Motor IA</h3>
+                  </div>
+
+                  <!-- Confidence limit slider input -->
+                  <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                      <div>
+                        <h4 class="font-semibold text-slate-800">Nota Mínima de Confiança (%)</h4>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Define a nota exigida do OCR para aprovação instantânea livre de revisão humana.</p>
+                      </div>
+                      <span id="settings-threshold-label" class="text-base font-bold text-indigo-600 font-mono bg-indigo-50 px-3 py-1 rounded">
+                        80%
+                      </span>
+                    </div>
+
+                    <input 
+                      type="range"
+                      id="settings-threshold-slider"
+                      min="50"
+                      max="100"
+                      value="80"
+                      class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                    />
+                    <div class="flex justify-between text-[10px] text-slate-400 font-medium">
+                      <span>50% (Permissivo)</span>
+                      <span>100% (Strict / Rigoroso)</span>
+                    </div>
+                  </div>
+
+                  <!-- Gemini selection models list -->
+                  <div class="space-y-2">
+                    <label class="font-semibold text-slate-800 block">Modelo de Visão e Linguagem Ativo</label>
+                    <select
+                      id="settings-ai-model"
+                      class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 bg-slate-50/50 font-medium cursor-pointer"
+                    >
+                      <option value="gemini-3.5-flash">Gemini 3.5 Flash (Recomendado • Alta Densidade)</option>
+                      <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro Preview (Análise Profunda e Custos Elevados)</option>
+                      <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (Baixo Custo • Resposta Síncrona)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Policies toggle logic checks -->
+                <div class="bg-white border border-slate-200 rounded-lg p-6 space-y-4 shadow-xs text-xs">
+                  
+                  <div class="flex items-center space-x-2 pb-3 border-b border-slate-50">
+                    <i data-lucide="shield" class="text-indigo-600 w-5 h-5"></i>
+                    <h3 class="font-bold text-slate-800 text-sm">Políticas de Processamento de Arquivos</h3>
+                  </div>
+
+                  <label class="flex items-start space-x-3 group cursor-pointer">
+                    <input 
+                      type="checkbox"
+                      id="settings-auto-process"
+                      class="mt-1 w-4 h-4 text-indigo-600 bg-slate-50 border-slate-200 rounded focus:ring-indigo-500"
+                    />
+                    <div class="space-y-0.5">
+                      <span class="font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors">Iniciar OCR no Upload</span>
+                      <p class="text-[11px] text-slate-400">Processa e audita a Nota Fiscal assim que o arquivo é arrastado para a central.</p>
+                    </div>
+                  </label>
+
+                  <label class="flex items-start space-x-3 group cursor-pointer">
+                    <input 
+                      type="checkbox"
+                      id="settings-alert-low"
+                      class="mt-1 w-4 h-4 text-indigo-600 bg-slate-50 border-slate-200 rounded focus:ring-indigo-500"
+                    />
+                    <div class="space-y-0.5">
+                      <span class="font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors">Disparar Alertas de Confiança</span>
+                      <p class="text-[11px] text-slate-400">Emite um alerta crítico editável no painel caso os dados fiscais resultem com nota inferior à configurável.</p>
+                    </div>
+                  </label>
+                </div>
+
+                <!-- Save bar button controls -->
+                <div class="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    id="btn-save-settings"
+                    class="flex items-center space-x-2 px-5 py-2.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md shadow-indigo-100 hover:shadow-lg transition-all cursor-pointer"
+                  >
+                    <i data-lucide="save" class="w-[15px] h-[15px]"></i>
+                    <span id="save-settings-btn-text">Salvar Configurações</span>
+                  </button>
+                </div>
+              </form>
+
+              <!-- Informative cards and compliance frameworks on settings -->
+              <div class="space-y-6 text-xs text-slate-600 leading-relaxed">
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-5 space-y-3">
+                  <div class="flex items-center space-x-1.5 text-slate-800 font-bold mb-1">
+                    <i data-lucide="info" class="text-indigo-600 shrink-0 w-4 h-4"></i>
+                    <span>Conformidade Legal</span>
+                  </div>
+                  <p>
+                    Este módulo opera integrado às premissas de validação descritas na Nova Lei de Licitações (Lei nº 14.133/2021) e exigências regulatórias acessórias da Receita Federal do Brasil.
+                  </p>
+                  <p>
+                    Qualquer alteração nestes limites altera retroativamente o comportamento de aprovação direta de notas fiscais cujos índices de leitura cognitiva apresentarem divergências sutis em pixels.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+        </main>
+
+      </div>
+
+    </div>
+
+    <!-- DOCUMENT DETAILS DRAWER OVERLAY -->
+    <div id="drawer-overlay" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex justify-end transition-all opacity-0 pointer-events-none duration-250">
+      <div id="drawer-panel" class="relative w-full max-w-xl bg-white h-full shadow-2xl flex flex-col justify-between overflow-hidden translate-x-full transition-transform duration-300">
+        
+        <!-- Header bar -->
+        <div class="px-6 py-5 border-b border-slate-105 flex items-center justify-between bg-white shrink-0">
+          <div>
+            <span class="text-[10px] text-slate-400 font-mono tracking-wider block uppercase">Auditoria Analítica</span>
+            <h2 class="font-bold text-slate-800 text-base flex items-center space-x-2">
+              <i data-lucide="shield-check" class="text-indigo-600 w-[18px] h-[18px]"></i>
+              <span id="drawer-doc-type">Documento</span>
+            </h2>
+          </div>
+          <button 
+            id="drawer-close-btn" 
+            class="text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-all cursor-pointer"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Scrollable details central body -->
+        <div class="flex-1 overflow-y-auto p-6 space-y-6">
+          
+          <!-- Danger warning bar if warnings exist -->
+          <div id="drawer-warnings-box" class="bg-rose-50 border border-rose-100 rounded-lg p-4 space-y-2 hidden">
+            <div class="flex items-center space-x-2 text-rose-800 font-bold text-xs">
+              <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0"></i>
+              <span>Restrição Fiscal Detectada</span>
+            </div>
+            <ul id="drawer-warnings-list" class="text-[11px] text-rose-700 list-disc list-inside space-y-1 pl-1 leading-relaxed">
+              <!-- Injected dynamically -->
+            </ul>
+          </div>
+
+          <!-- Core metadata details list -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest border-l-2 border-indigo-500 pl-2">Dados do Credor</h3>
+            <div class="grid grid-cols-2 gap-4 text-xs bg-slate-50/50 p-4 rounded-lg border border-slate-100">
+              <div class="col-span-2 space-y-1">
+                <span class="text-slate-400 font-medium block">Razão Social Fornecedor</span>
+                <span id="drawer-supplier-name" class="text-slate-800 font-semibold text-[13px]">-</span>
+              </div>
+              <div class="space-y-1">
+                <span class="text-slate-400 font-medium block">CNPJ Credor</span>
+                <span id="drawer-cnpj" class="text-slate-850 font-mono font-medium">-</span>
+              </div>
+              <div class="space-y-1">
+                <span class="text-slate-400 font-medium block">Contrato do Empenho</span>
+                <span id="drawer-contract" class="text-slate-800 font-mono font-medium text-indigo-650">-</span>
+              </div>
+              
+              <!-- Value area conditional -->
+              <div id="drawer-value-container" class="col-span-2 space-y-1 bg-indigo-50/50 p-3 rounded-lg border border-indigo-100/50 flex justify-between items-center hidden">
+                <div>
+                  <span class="text-indigo-600 font-semibold block text-[11px] uppercase tracking-wider">Valor do Documento</span>
+                  <span class="text-slate-500 text-[10px]">Fiscal / NFS-e</span>
+                </div>
+                <span id="drawer-value-display" class="text-indigo-800 font-bold text-base font-mono">
+                  R$ 0,00
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Extracted Structured Field list -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest border-l-2 border-indigo-500 pl-2">Estrutura Extraída (OCR / XML)</h3>
+            <div class="divide-y divide-slate-100 border border-slate-200 rounded-lg overflow-hidden text-xs" id="drawer-extracted-fields">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+
+          <!-- Compliance checks run -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest border-l-2 border-indigo-500 pl-2">Passos da Validação de Conformidade</h3>
+            <div class="space-y-2" id="drawer-checks-list">
+              <!-- Injected dynamically -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer Audit Controls for approvals -->
+        <div class="px-6 py-4 bg-white border-t border-slate-100 flex items-center space-x-3 justify-end shrink-0">
+          <div id="drawer-audit-controls" class="flex items-center space-x-3 hidden">
+            <button
+              id="btn-drawer-reprove"
+              class="px-4 py-2.5 text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 hover:text-rose-800 transition-all cursor-pointer disabled:opacity-50"
+            >
+              Reprovar Documento
+            </button>
+            <button
+              id="btn-drawer-approve"
+              class="px-4 py-2.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-md shadow-indigo-100 transition-all cursor-pointer disabled:opacity-50"
+            >
+              Forçar Aprovação Humana
+            </button>
+          </div>
+          <button
+            id="drawer-ok-btn"
+            class="px-4 py-2.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer transition-all"
+          >
+            Fechar Visualização
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ADD CONTRACT OVERLAY MODAL -->
+    <div id="contract-modal-overlay" class="fixed inset-0 z-50 bg-slate-900/45 backdrop-blur-xs flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-250">
+      <div id="contract-modal-panel" class="bg-white rounded-xl border border-slate-200 shadow-2xl w-full max-w-xl overflow-hidden scale-95 transition-transform duration-250">
+        
+        <div class="px-6 py-4 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
+          <h3 class="font-bold text-slate-800 text-sm">Novo Contrato Administrativo</h3>
+          <button 
+            id="btn-close-contract-modal" 
+            class="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-105 cursor-pointer"
+          >
+            <i data-lucide="x" class="w-[18px] h-[18px]"></i>
+          </button>
+        </div>
+
+        <form id="add-contract-form" class="p-6 space-y-4 text-xs">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="font-semibold text-slate-700">Código do Contrato</label>
+              <input 
+                type="text" 
+                required 
+                name="id" 
+                placeholder="ex: CT-2026-092"
+                class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                id="input-contract-id"
+              />
+            </div>
+            <div class="space-y-1">
+              <label class="font-semibold text-slate-700">Fornecedor / Credor</label>
+              <input 
+                type="text" 
+                required 
+                name="supplierName" 
+                placeholder="Razão Social completa"
+                class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                id="input-contract-supplier"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="font-semibold text-slate-700">Objeto do Contrato</label>
+            <input 
+              type="text" 
+              required 
+              name="title" 
+              placeholder="Descrição sumária do objeto contratado perante o DO"
+              class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"
+              id="input-contract-title"
+            />
+          </div>
+
+          <div class="grid grid-cols-3 gap-4">
+            <div class="space-y-1">
+              <label class="font-semibold text-slate-700">Valor Total (R$)</label>
+              <input 
+                type="number" 
+                step="0.01" 
+                required 
+                name="totalValue" 
+                placeholder="Em BRL"
+                class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                id="input-contract-value"
+              />
+            </div>
+            <div class="space-y-1">
+              <label class="font-semibold text-slate-700">Data de Início</label>
+              <input 
+                type="date" 
+                required 
+                name="startDate"
+                class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                id="input-contract-start"
+              />
+            </div>
+            <div class="space-y-1">
+              <label class="font-semibold text-slate-700">Data de Término</label>
+              <input 
+                type="date" 
+                required 
+                name="endDate"
+                class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                id="input-contract-end"
+              />
+            </div>
+          </div>
+
+          <div class="px-6 py-4 bg-slate-55 border-t border-slate-100 -mx-6 -mb-6 mt-6 flex justify-end space-x-3 shrink-0">
+            <button
+              type="button"
+              id="btn-cancel-contract-modal"
+              class="px-4 py-2 text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg font-semibold transition-all cursor-pointer"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              id="btn-submit-contract"
+              class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 shadow-md shadow-indigo-150 transition-all cursor-pointer"
+            >
+              Registrar Contrato
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+    <!-- Vanilla Client Core logic bundle script -->
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
