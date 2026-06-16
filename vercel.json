@@ -1,0 +1,58 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "routes": [
+    {
+      "src": "/api/documents",
+      "dest": "/api/documents.ts"
+    },
+    {
+      "src": "/api/processing",
+      "dest": "/api/processing.ts"
+    },
+    {
+      "src": "/api/alerts",
+      "dest": "/api/alerts.ts"
+    },
+    {
+      "src": "/api/contracts",
+      "dest": "/api/contracts.ts"
+    },
+    {
+      "src": "/api/settings",
+      "dest": "/api/settings.ts"
+    },
+    {
+      "src": "/api/stats",
+      "dest": "/api/stats.ts"
+    },
+    {
+      "src": "/api/resolve-alert",
+      "dest": "/api/resolve-alert.ts"
+    },
+    {
+      "src": "/api/document-action",
+      "dest": "/api/document-action.ts"
+    },
+    {
+      "src": "/api/upload-simulation",
+      "dest": "/api/upload-simulation.ts"
+    },
+    {
+      "src": "/api/upload-real",
+      "dest": "/api/upload-real.ts"
+    },
+    {
+      "src": "/api/reset",
+      "dest": "/api/reset.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
